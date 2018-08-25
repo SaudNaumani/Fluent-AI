@@ -17,18 +17,22 @@ app.use(
     maxAge: 30 * 24 * 60 * 60 * 1000,
     keys: [keys.cookieKey]
   })
-);
+  );
 
 mongoose.connect(
   keys.mongoURI,
   { useNewUrlParser: true }
-);
+  );
 
 require("./models/User");
+require("./models/Language");
 const User = mongoose.model("users");
+const Language = mongoose.model("languages");
 
 app.get("/", (req, res) => {
-  res.render("index", { user: req.session.user });
+  Language.find({}).then(languages =>{
+    res.render("index", { user: req.session.user, languages: languages });
+  });
 });
 
 
@@ -46,7 +50,9 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/languages/:name/topics", (req, res) => {
-    res.render("topics", { user: req.session.user});
+  Language.findOne({ name: req.params.name }).then(language => {
+    res.render("topics", { topics: language.topics, user: req.session.user });
+  });
 });
 
 app.post("/login", urlencodedParser, (req, res) => {

@@ -1,60 +1,25 @@
 <div class="wrapper" id="languages">
-<h3 class="text-center">Choose a topic</h3>
-<br>
-<div class="container">
-  <div class="row">
-    <div class="col-xs-12 col-sm-3">
-      <!-- insert <div class="card"> -->
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/general.jpg'); height: 400px;">
-          <div class="card-category">Beginner</div>
-          <div class="card-description">
-            <h2>General</h2>
+  <h3 class="text-center">Choose a topic</h3>
+  <br>
+  <div class="container">
+    <div class="row">
+       <% topics.forEach((topic)=>{ %>
+  <div class="col-xs-12 col-sm-3">
+
+        <!-- insert <div class="card"> -->
+          <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/<%= topic.name %>.jpg'); height: 400px;">
+            <div class="card-category"><%= topic.difficulty %></div>
+            <div class="card-description">
+              <h2><%= topic.name %></h2>
+            </div>
+            <a class="card-link" href="#" ></a>
           </div>
-          <a class="card-link" href="#" ></a>
         </div>
-      </div>
-      <div class="col-xs-12 col-sm-3">
-      <!-- insert <div class="card"> -->
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/travel.jpg'); height: 400px;">
-          <div class="card-category">Intermediate</div>
-          <div class="card-description">
-            <h2>Travel</h2>
-          </div>
-          <a class="card-link" href="#" ></a>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-3">
-      <!-- insert <div class="card"> -->
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/food.jpg'); height: 400px;">
-          <div class="card-category">Intermediate</div>
-          <div class="card-description">
-            <h2>Food</h2>
-          </div>
-          <a class="card-link" href="#" ></a>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-3">
-      <!-- insert <div class="card"> -->
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/history.jpg'); height: 400px;">
-          <div class="card-category">Difficult</div>
-          <div class="card-description">
-            <h2>History</h2>
-          </div>
-          <a class="card-link" href="#" ></a>
-        </div>
-      </div>
-      <div class="col-xs-12">
-      <!-- insert <div class="card"> -->
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/sports.jpg'); ">
-          <div class="card-category">Difficult</div>
-          <div class="card-description">
-            <h2>Sports</h2>
-          </div>
-          <a class="card-link" href="#" ></a>
-        </div>
-      </div>
+  <% }) %>
 
 
-    </div>
-  </div>
-  </div>
+
+
+              </div>
+            </div>
+          </div>
