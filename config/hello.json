@@ -1,9 +1,6 @@
 {
   "english": {
     "topics": [
-
-
-
       {
         "name": "general",
         "difficulty": "beginner",
@@ -15,7 +12,6 @@
             "quesiton": "What are your hobbies?"
           }]
       }
-
       {
         "name": "travel",
         "difficulty": "intermediate",
@@ -27,7 +23,6 @@
             "quesiton": "What are your hobbies?"
           }]
       }
-
       {
         "name": "food",
         "difficulty": "intermediate",
@@ -39,7 +34,6 @@
             "quesiton": "What are your hobbies?"
           }]
       }
-
       {
         "name": "history",
         "difficulty": "difficult",
@@ -51,8 +45,6 @@
             "quesiton": "What are your hobbies?"
           }]
       }
-
-
       {
         "name": "sports",
         "difficulty": "difficult",
@@ -64,8 +56,6 @@
             "quesiton": "What are your hobbies?"
           }]
       }
-
-
     ]
   }
 }

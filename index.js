@@ -36,6 +36,7 @@ app.get("/", (req, res) => {
 });
 
 
+
 app.get("/login", (req, res) => {
   res.render("login", { user: req.session.user});
 });
@@ -51,8 +52,23 @@ app.get("/logout", (req, res) => {
 
 app.get("/languages/:name/topics", (req, res) => {
   Language.findOne({ name: req.params.name }).then(language => {
-    res.render("topics", { topics: language.topics, user: req.session.user });
+    res.render("topics", { language: language, topics: language.topics, user: req.session.user });
   });
+});
+
+app.get("/languages/:language/:topic", (req, res) => {
+  if(req.session.user) {
+    Language.findOne({ name: req.params.language }).then(language => {
+      console.log(language);
+      for(let i=0; i<language.topics.length;i++){
+        if (language.topics[i].name == req.params.topic){
+          res.render("show", { user: req.session.user, language: language, topic: language.topics[i] });
+        }
+      }
+  });
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.post("/login", urlencodedParser, (req, res) => {
@@ -85,7 +101,6 @@ app.post("/signup", urlencodedParser, (req, res) => {
     res.redirect("/");
   });
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
