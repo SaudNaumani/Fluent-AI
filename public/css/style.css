@@ -1,0 +1,20 @@
+@import "banner.css";
+@import "card.css";
+@import "navbar.css";
+@import "footer.css";
+@import "registration.css";
+
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+body {
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100vh;
+}
+

@@ -1,0 +1,77 @@
+<div class="banner" style="background-image: linear-gradient(-225deg, rgba(0,101,168,0.6) 0%, rgba(0,36,61,0.6) 50%), url('/public/img/banner.jpg');">
+  <div class="banner-content">
+    <h1><span id="banner-typed-text"></span></h1>
+    <p>Get one on one language coaching</p>
+    <a href="#languages" class="btn btn-primary btn-lg">Start now</a>
+  </div>
+</div>
+
+<div class="wrapper"id="languages">
+<h3 class="text-center">Which language would you like to learn?</h3>
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-4">
+      <!-- insert <div class="card"> -->
+        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/english.jpg');">
+          <div class="card-category">Popular</div>
+          <div class="card-description">
+            <h2>English</h2>
+          </div>
+          <a class="card-link" href="/languages/english/topics" ></a>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4">
+      <!-- insert <div class="card"> -->
+        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/spanish.jpg');">
+          <div class="card-category">Popular</div>
+          <div class="card-description">
+            <h2>Spanish</h2>
+          </div>
+          <a class="card-link" href="#" ></a>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4">
+      <!-- insert <div class="card"> -->
+        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/french.jpg');">
+          <div class="card-category">Popular</div>
+          <div class="card-description">
+            <h2>French</h2>
+          </div>
+          <a class="card-link" href="#" ></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script>
+  var navbar = document.querySelector('.navbar-wagon');
+  navbar.classList.add('navbar-fixed-top');
+  navbar.style.boxShadow = "none";
+  var navbarLinks = document.querySelectorAll('.navbar-wagon-link');
+  var title = document.querySelector('#nav-title').classList.remove('navbar-wagon-link-black');
+  navbarLinks.forEach(function(link) {
+          link.classList.remove('navbar-wagon-link-black');
+          link.style.color = "white";
+        });
+  if (navbar) {
+    console.log("hello world");
+    window.addEventListener('scroll', function() {
+      if (window.scrollY >= window.innerHeight - 100) {
+        navbar.classList.add('navbar-wagon-white');
+        navbarLinks.forEach(function(link) {
+          link.classList.remove('navbar-wagon-link-black');
+        });
+      } else {
+        navbar.classList.remove('navbar-wagon-white');
+        navbarLinks.forEach(function(link) {
+          link.classList.remove('navbar-wagon-link-black');
+        });
+      }
+    });
+  }
+  </script>
+
+
+
