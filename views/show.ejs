@@ -1,37 +1,64 @@
 <% language.topics.forEach(function(t) { %>
 <%if (t.name == topic.name) {%>
 <div class="container text-center" style="min-height: calc(100vh - 200px); margin-top: 30px;">
-<a href="/languages/<%= language.name %>/topics" class="btn btn-default" style="position: absolute; left:150px;top:20px;">Back to topics</a>
+  <a href="/languages/<%= language.name %>/topics" class="btn btn-default" style="position: absolute; left:150px;top:20px;">Back to topics</a>
   <h1 class="text-center" id="question"> <b id="question"><%= t.questions[0].question %> </b> <i class="fa fa-volume-up play-sound" id="playAudio"></i></h1>
   <h4><em id="translation"></em></h4>
-
- <!--  <form action="" class="form-group">
-    <textarea name="response" class="form-control" style="height: 300px; margin: 10px 0px;" minlength="500" required></textarea>
-    <input type="submit" value="Submit Response" class="btn btn-primary form-control">
-  </form> -->
   <div id="results" style="margin: 30px 30px 0 30px; position: relative;" class="text-center">
    <span id="final_span" class="interim" style="font-size: 1.5em; font-weight: 600;" contenteditable="true" class="final"></span>
    <span id="interim_span" class="interim" style="font-size: 1.5em; font-weight: 600;"></span>
    <div style="position: absolute; bottom: -40px; right: 0px;">
-    <a href="" id="submit-response" class="btn btn-success" >Submit Response</a>
+    <button id="ask" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal">
+      Ask for a word
+    </button>
   </div>
 </div>
 <button id="mic" onclick="startButton(event);">
   <i class="fas fa-microphone" style="padding: 15px 15px;"></i>
 </button>
 </div>
-<%# t.questions.forEach(function(q) { %>
-<!-- <h1 class="text-center"> <b><%#= q['question'] %> </b> </h1> -->
-<%# });%>
+
 <% }%>
 <% }); %>
 
-<audio id="reader"></audio>
+<audio id="reader" ></audio>
 
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enter a word for translation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" class="form-group" id="ask-form">
+          <div style="display: flex; justify-content: center;">
+
+            <h3 style="margin-top: 0px;" class="text-center">How do I say</h3>
+            <input type="text" id="wordIn" class="form-control" placeholder="Enter a word to translate" style="width: 200px; margin: 0px 5px;" required>
+            <h3 style="margin-top: 0px;"  class="text-center">In <%= language.name %></h3>
+          </div>
+          <input type="submit" class="btn-warning form-control" value="Get definition" style="margin-top:20px;">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   const translation = document.querySelector("#translation")
   const q = document.querySelector("#question").innerText
+  const reader = document.querySelector("#reader")
   const codes = {
     english: "en-US",
     spanish: "es-ES",
@@ -40,6 +67,43 @@
     german: "de-DE",
     chinese: "zh-ZH"
   }
+
+  const askForm = document.querySelector('#ask-form')
+  askForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const word = document.querySelector("#wordIn").value
+    // const lang = document.querySelector("#languageIn").value
+    fetch("https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20180826T074604Z.0819c5075ae62255.463fe2f69e39bc1be6b534ead1786daf22f65af5&text="+word+"&lang=" + codes['<%= language.name %>'].split("-")[0], {
+      method: "GET",
+
+    })
+    .then(response => response.json())
+    .then((data) => {
+      console.log(data)
+      fetch("https://aein7.lib.id/language-tutor@dev/texttospeech/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "You can say: " + data.text[0],
+          languageCode: data.lang.split("-")[1]
+        })
+      })
+      .then(response => response.json())
+      .then((data) => {
+        reader.src = "data:audio/ogg;base64," + data.audioContent;
+      reader.play(); // Look at local_names.default
+    });
+
+      const playAudio = document.querySelector("#playAudio")
+      playAudio.addEventListener('click', ()=>{
+        reader.play();
+      });
+    });
+  });
+
+
   <% if (user.language != language.name) { %>
     fetch("https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20180826T074604Z.0819c5075ae62255.463fe2f69e39bc1be6b534ead1786daf22f65af5&text="+q+"&lang=" + codes['<%= user.language %>'].split("-")[0], {
       method: "GET",
@@ -51,7 +115,6 @@
     });
     <% } %>
 
-    const reader = document.querySelector("#reader")
     fetch("https://aein7.lib.id/language-tutor@dev/texttospeech/", {
       method: "POST",
       headers: {
@@ -115,24 +178,24 @@
         .then(response => response.json())
         .then((data) => {
           console.log(data);
-          if (data.corrected != final_transcript) {
-          final_span.insertAdjacentHTML('afterend', "<br><span id='corrected' style='font-size: 1.5em; color: green; font-weight: 600;'>"+data.corrected+"</span>");
-          fetch("https://aein7.lib.id/language-tutor@dev/texttospeech/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              message: "It is better to say: "+data.corrected,
-              languageCode: codes['<%= language.name %>']
+          if (data.corrected != final_transcript && data.status) {
+            final_span.insertAdjacentHTML('afterend', "<br><span id='corrected' style='font-size: 1.5em; color: green; font-weight: 600;'>"+data.corrected+"</span>");
+            fetch("https://aein7.lib.id/language-tutor@dev/texttospeech/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                message: "It is better to say: "+data.corrected,
+                languageCode: codes['<%= language.name %>']
+              })
             })
-          })
-          .then(response => response.json())
-          .then((data) => {
-            reader.src = "data:audio/ogg;base64," + data.audioContent;
+            .then(response => response.json())
+            .then((data) => {
+              reader.src = "data:audio/ogg;base64," + data.audioContent;
             reader.play(); // Look at local_names.default
           });
-        }
+          }
 
         });
 
@@ -218,36 +281,36 @@
         recognition.stop();
         return;
       }
-    const corrected_spam = document.getElementById("corrected");
-  final_transcript = '';
-  recognition.start();
-  ignore_onend = false;
-  final_span.innerHTML = '';
-  interim_span.innerHTML = '';
-  corrected_spam.innerHTML = '';
-  showInfo('info_allow');
-  start_timestamp = event.timeStamp;
-}
+      const corrected_spam = document.getElementById("corrected");
+      final_transcript = '';
+      recognition.start();
+      ignore_onend = false;
+      final_span.innerHTML = '';
+      interim_span.innerHTML = '';
+      corrected_spam.innerHTML = '';
+      showInfo('info_allow');
+      start_timestamp = event.timeStamp;
+    }
 
-var two_line = /\n\n/g;
-var one_line = /\n/g;
-function linebreak(s) {
-  return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
-}
-var first_char = /\S/;
-function capitalize(s) {
-  return s.replace(first_char, function(m) { return m.toUpperCase(); });
-}
-function showInfo(s) {
-  if (s) {
-    for (var child = info.firstChild; child; child = child.nextSibling) {
-      if (child.style) {
-        child.style.display = child.id == s ? 'inline' : 'none';
+    var two_line = /\n\n/g;
+    var one_line = /\n/g;
+    function linebreak(s) {
+      return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+    }
+    var first_char = /\S/;
+    function capitalize(s) {
+      return s.replace(first_char, function(m) { return m.toUpperCase(); });
+    }
+    function showInfo(s) {
+      if (s) {
+        for (var child = info.firstChild; child; child = child.nextSibling) {
+          if (child.style) {
+            child.style.display = child.id == s ? 'inline' : 'none';
+          }
+        }
+        info.style.visibility = 'visible';
+      } else {
+        info.style.visibility = 'hidden';
       }
     }
-    info.style.visibility = 'visible';
-  } else {
-    info.style.visibility = 'hidden';
-  }
-}
-</script>
+  </script>
