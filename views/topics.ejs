@@ -6,7 +6,7 @@
      <% topics.forEach((topic)=>{ %>
      <div class="col-xs-12 col-sm-3">
       <!-- insert <div class="card"> -->
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/<%= topic.name %>.jpg'); height: 400px;">
+        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.2)), url('/public/img/topics/<%= topic.picture %>.jpg'); height: 400px;">
           <div class="card-category"><%= topic.difficulty %></div>
           <div class="card-description">
             <h2><%= topic.name %></h2>
