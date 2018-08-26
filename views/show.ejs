@@ -1,22 +1,22 @@
 <% language.topics.forEach(function(t) { %>
 <%if (t.name == topic.name) {%>
 <div class="container text-center" style="min-height: calc(100vh - 200px); margin-top: 30px;">
-  <h1 class="text-center"> <b><%= t.questions[0].question %> </b> </h1>
+<a href="/languages/<%= language.name %>/topics" class="btn btn-default" style="position: absolute; left:150px;top:20px;">Back to topics</a>
+  <h1 class="text-center" id="question"> <b id="question"><%= t.questions[0].question %> </b> <i class="fa fa-volume-up play-sound" id="playAudio"></i></h1>
+  <h4><em id="translation"></em></h4>
+
  <!--  <form action="" class="form-group">
     <textarea name="response" class="form-control" style="height: 300px; margin: 10px 0px;" minlength="500" required></textarea>
     <input type="submit" value="Submit Response" class="btn btn-primary form-control">
   </form> -->
-
-  <div></div>
   <div id="results" style="margin: 30px 30px 0 30px; position: relative;" class="text-center">
-   <span id="final_span" contenteditable="true" class="final"></span>
-   <span id="interim_span" class="interim"></span>
+   <span id="final_span" class="interim" style="font-size: 1.5em; font-weight: 600;" contenteditable="true" class="final"></span>
+   <span id="interim_span" class="interim" style="font-size: 1.5em; font-weight: 600;"></span>
    <div style="position: absolute; bottom: -40px; right: 0px;">
-    <a href="/languages/<%= language.name %>/topics" class="btn btn-warning" >Back to topics</a>
     <a href="" id="submit-response" class="btn btn-success" >Submit Response</a>
-   </div>
- </div>
- <button id="mic" onclick="startButton(event)">
+  </div>
+</div>
+<button id="mic" onclick="startButton(event);">
   <i class="fas fa-microphone" style="padding: 15px 15px;"></i>
 </button>
 </div>
@@ -26,107 +26,206 @@
 <% }%>
 <% }); %>
 
+<audio id="reader"></audio>
 
 
 <script>
- var final_transcript = '';
-
- var recognizing = false;
-
- var ignore_onend;
-
- var start_timestamp;
-
- if (!('webkitSpeechRecognition' in window)) {
-
-  upgrade();
-
-} else {
-
-  var recognition = new webkitSpeechRecognition();
-
-  recognition.continuous = true;
-
-  recognition.interimResults = true;
-
-  recognition.onstart = function() {
-
-    recognizing = true;
-
-    document.getElementById("mic").classList.add('active');
-
-  };
-  recognition.onend = function() {
-    recognizing = false;
-    if (ignore_onend) {
-      return;
-    }
-    document.getElementById("mic").classList.remove
-    ('active');
-    if (!final_transcript) {
-      showInfo('info_start');
-      return;
-    }
-    showInfo('');
-    if (window.getSelection) {
-      window.getSelection().removeAllRanges();
-      var range = document.createRange();
-      range.selectNode(document.getElementById('final_span'));
-      window.getSelection().addRange(range);
-    }
-
-  };
-
-
-  recognition.onerror = function(event) {
-
-    if (event.error == 'no-speech') {
-
-      document.getElementById("mic").classList.remove('active');
-
-      ignore_onend = true;
-
-    }
-
-    if (event.error == 'audio-capture') {
-
-      document.getElementById("mic").classList.remove('active');
-
-      ignore_onend = true;
-
-    }
+  const translation = document.querySelector("#translation")
+  const q = document.querySelector("#question").innerText
+  const codes = {
+    english: "en-US",
+    spanish: "es-ES",
+    french: "fr-FR",
+    arabic: "ar-AR",
+    german: "de-DE",
+    chinese: "zh-ZH"
   }
+  <% if (user.language != language.name) { %>
+    fetch("https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20180826T074604Z.0819c5075ae62255.463fe2f69e39bc1be6b534ead1786daf22f65af5&text="+q+"&lang=" + codes['<%= user.language %>'].split("-")[0], {
+      method: "GET",
 
-  recognition.onresult = function(event) {
-    var interim_transcript = '';
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        final_transcript += event.results[i][0].transcript;
-      } else {
-        interim_transcript += event.results[i][0].transcript;
+    })
+    .then(response => response.json())
+    .then((data) => {
+      translation.innerHTML = data.text[0];
+    });
+    <% } %>
+
+    const reader = document.querySelector("#reader")
+    fetch("https://aein7.lib.id/language-tutor@dev/texttospeech/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: q,
+        languageCode: codes['<%= language.name %>']
+      })
+    })
+    .then(response => response.json())
+    .then((data) => {
+      reader.src = "data:audio/ogg;base64," + data.audioContent;
+      reader.play(); // Look at local_names.default
+    });
+
+    const playAudio = document.querySelector("#playAudio")
+    playAudio.addEventListener('click', ()=>{
+      reader.play();
+    });
+    var final_transcript = '';
+
+    var recognizing = false;
+
+    var ignore_onend;
+
+    var start_timestamp;
+
+    if (!('webkitSpeechRecognition' in window)) {
+
+      upgrade();
+
+    } else {
+
+      var recognition = new webkitSpeechRecognition();
+
+      recognition.continuous = true;
+
+      recognition.interimResults = true;
+
+      recognition.onstart = function() {
+
+        recognizing = true;
+
+        document.getElementById("mic").classList.add('active');
+
+      };
+      recognition.onend = function() {
+        console.log(final_transcript);
+        const finalSpan = document.querySelector("#final_span")
+        fetch("https://api.perfecttense.com/correct", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "3WZlxkcXvlrpqCHpW7OghAtt"
+          },
+          body: JSON.stringify({
+            text: final_transcript,
+          })
+        })
+        .then(response => response.json())
+        .then((data) => {
+          console.log(data);
+          if (data.corrected != final_transcript) {
+          final_span.insertAdjacentHTML('afterend', "<br><span id='corrected' style='font-size: 1.5em; color: green; font-weight: 600;'>"+data.corrected+"</span>");
+          fetch("https://aein7.lib.id/language-tutor@dev/texttospeech/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message: "It is better to say: "+data.corrected,
+              languageCode: codes['<%= language.name %>']
+            })
+          })
+          .then(response => response.json())
+          .then((data) => {
+            reader.src = "data:audio/ogg;base64," + data.audioContent;
+            reader.play(); // Look at local_names.default
+          });
+        }
+
+        });
+
+
+        fetch("https://aein7.lib.id/language-tutor@dev/grammar/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: final_transcript,
+          })
+        })
+        .then(response => response.json())
+        .then((data) => {
+          console.log(data);
+          let off = 0;
+          var text = finalSpan.innerText;
+          let newText = text;
+          data.errors.forEach(error => {
+           newText = newText.substring(0, error.offset + off) + "α" + error.bad + "γ" + newText.substring(error.offset + error.length + off);
+           off+=2;
+         });
+          final_span.innerHTML = newText.replace(/α/g, "<span style='color:red;'>").replace(/γ/g,'</span>');
+        });
+        recognizing = false;
+        if (ignore_onend) {
+          return;
+        }
+        document.getElementById("mic").classList.remove
+        ('active');
+        if (!final_transcript) {
+          showInfo('info_start');
+          return;
+        }
+        showInfo('');
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges();
+          var range = document.createRange();
+          range.selectNode(document.getElementById('final_span'));
+          window.getSelection().addRange(range);
+        }
+
+      };
+
+
+      recognition.onerror = function(event) {
+
+        if (event.error == 'no-speech') {
+
+          document.getElementById("mic").classList.remove('active');
+
+          ignore_onend = true;
+
+        }
+
+        if (event.error == 'audio-capture') {
+
+          document.getElementById("mic").classList.remove('active');
+
+          ignore_onend = true;
+
+        }
       }
-    }
-    final_transcript = capitalize(final_transcript);
-    final_span.innerHTML = linebreak(final_transcript);
-    interim_span.innerHTML = linebreak(interim_transcript);
-    if (final_transcript || interim_transcript) {
-      showButtons('inline-block');
-    }
-  };
-}
 
-function startButton(event) {
-  if (recognizing) {
-    recognition.stop();
-    return;
-  }
-  // final_transcript = '';
+      recognition.onresult = function(event) {
+        var interim_transcript = '';
+        for (var i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            final_transcript += event.results[i][0].transcript;
+          } else {
+            interim_transcript += event.results[i][0].transcript;
+          }
+        }
+        final_transcript = capitalize(final_transcript);
+        final_span.innerHTML = linebreak(final_transcript);
+        interim_span.innerHTML = linebreak(interim_transcript);
+      };
+    }
+
+    function startButton(event) {
+      if (recognizing) {
+        recognition.stop();
+        return;
+      }
+    const corrected_spam = document.getElementById("corrected");
+  final_transcript = '';
   recognition.start();
   ignore_onend = false;
-  // final_span.innerHTML = '';
-  // interim_span.innerHTML = '';
+  final_span.innerHTML = '';
+  interim_span.innerHTML = '';
+  corrected_spam.innerHTML = '';
   showInfo('info_allow');
-  showButtons('none');
   start_timestamp = event.timeStamp;
 }
 

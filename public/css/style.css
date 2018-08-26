@@ -22,3 +22,12 @@ html {
 body:first-child {
   min-height: 100vh;
 }
+
+.play-sound:hover {
+  opacity: 0.5;
+  cursor:pointer;
+}
+
+.play-sound {
+   margin-left: 10px;
+}

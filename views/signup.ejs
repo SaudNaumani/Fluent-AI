@@ -2,10 +2,18 @@
   <div class="form">
     <h2 class="text-center" style="margin: 0 0 20px 0;">Sign up</h2>
     <form class="login-form" method="post" action="/signup">
-      <input type="text" placeholder="Full name" name="name" class="fields"/>
-      <input type="text" placeholder="email" name="email" class="fields"/>
-      <input type="password" placeholder="password" name="password" class="fields"/>
-      <input type="text" placeholder="Primary language" name="language" class="fields"/>
+      <input type="text" placeholder="Full name" name="name" class="fields" required/>
+      <input type="text" placeholder="email" name="email" class="fields" required/>
+      <input type="password" placeholder="password" name="password" class="fields" required/>
+      <label class="text-left"> Native Language</label>
+      <select name="language" class="fields form-control" placeholder="Primary language" style="margin-bottom: 20px;">
+        <option value="arabic">Arabic</option>
+        <option value="english">English</option>
+        <option value="french">French</option>
+        <option value="spanish">Spanish</option>
+        <option value="german">German</option>
+        <option value="chinese">Mandarin</option>
+      </select>
       <input type="submit" value="Sign up" class="btn btn-primary" style="color: white;">
       <p class="message">Already registered? <a href="/login">Log in here</a></p>
     </form>
