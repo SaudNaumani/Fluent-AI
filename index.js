@@ -59,7 +59,7 @@ app.get("/languages/:name/topics", (req, res) => {
 app.get("/languages/:language/:topic", (req, res) => {
   if(req.session.user) {
     Language.findOne({ name: req.params.language }).then(language => {
-      console.log(language);
+      console.log(language.topics);
       for(let i=0; i<language.topics.length;i++){
         if (language.topics[i].name == req.params.topic){
           res.render("show", { user: req.session.user, language: language, topic: language.topics[i] });
