@@ -1,20 +1,25 @@
 <% language.topics.forEach(function(t) { %>
 <%if (t.name == topic.name) {%>
-<div class="container text-center">
+<div class="container text-center" style="min-height: calc(100vh - 200px); margin-top: 30px;">
   <h1 class="text-center"> <b><%= t.questions[0].question %> </b> </h1>
  <!--  <form action="" class="form-group">
     <textarea name="response" class="form-control" style="height: 300px; margin: 10px 0px;" minlength="500" required></textarea>
     <input type="submit" value="Submit Response" class="btn btn-primary form-control">
   </form> -->
 
-  <div id="results" style="margin: 30px;" class="text-center">
+  <div></div>
+  <div id="results" style="margin: 30px 30px 0 30px; position: relative;" class="text-center">
    <span id="final_span" contenteditable="true" class="final"></span>
    <span id="interim_span" class="interim"></span>
+   <div style="position: absolute; bottom: -40px; right: 0px;">
+    <a href="/languages/<%= language.name %>/topics" class="btn btn-warning" >Back to topics</a>
+    <a href="" id="submit-response" class="btn btn-success" >Submit Response</a>
    </div>
-   <button id="mic" onclick="startButton(event)">
-    <i class="fas fa-microphone" style="padding: 15px 20px;"></i>
-  </button>
  </div>
+ <button id="mic" onclick="startButton(event)">
+  <i class="fas fa-microphone" style="padding: 15px 15px;"></i>
+</button>
+</div>
 <%# t.questions.forEach(function(q) { %>
 <!-- <h1 class="text-center"> <b><%#= q['question'] %> </b> </h1> -->
 <%# });%>
